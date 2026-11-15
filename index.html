@@ -239,16 +239,6 @@
             border: 2px solid var(--gold);
         }
 
-        .stage-pill {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-        .stage-1 { background: #E8F8F5; color: #117864; }
-        .stage-2 { background: #FEF9E7; color: #9A7D0A; }
-
         .admin-toggle {
             text-align: center;
             margin-top: 30px;
@@ -458,7 +448,7 @@
                 <p style="font-size: 0.9rem; color: #555; font-weight: bold;">رقم كود الدخول بالمسابقة:</p>
                 <div class="badge-code" id="tRegNo"></div>
             </div>
-            <p style="font-size: 0.85rem; color: #555; margin-top: 10px;">يرجى الاحتفاظ برقم الكود وإحضار أصل شهادة الميلاد يوم الاختبار (23 يناير).</p>
+            <p style="font-size: 0.85rem; color: #555; margin-top: 10px;">يرجى الاحتفاظ برقم الكود وإحضار أصل شهادة الميلاد يوم الاختبار.</p>
             <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
                 <button class="btn" onclick="window.print()">🖨️ طباعة / حفظ الكارت PDF</button>
                 <button class="btn btn-navy" onclick="resetForm()">تسجيل متسابق آخر</button>
@@ -719,4 +709,74 @@
             tbody.innerHTML = '';
 
             const filtered = participants.filter(p => {
-                const matchesSearch = p.
+                const matchesSearch = p.applicantName.toLowerCase().includes(search) || p.nationalId.includes(search) || p.regNo.toLowerCase().includes(search);
+                const matchesVillage = villageFilter === 'all' || p.village === villageFilter;
+                const matchesStage = stageFilter === 'all' || p.stage === stageFilter;
+                return matchesSearch && matchesVillage && matchesStage;
+            });
+
+            filtered.forEach((p, index) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.regNo}</strong></td>
+                    <td><span class="stage-pill ${p.stage === 'المرحلة الأولى' ? 'stage-1' : 'stage-2'}">${p.stage}</span></td>
+                    <td>${p.village}</td>
+                    <td style="font-weight:700;">${p.applicantName}</td>
+                    <td>${p.nationalId}</td>
+                    <td>${p.age}</td>
+                    <td>${p.quranLevel}</td>
+                    <td>${p.parentName}</td>
+                    <td>${p.parentPhone}</td>
+                    <td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateScore(regNo, score) {
+            let p = participants.find(item => item.regNo === regNo);
+            if (p) {
+                p.score = score;
+                saveData();
+            }
+        }
+
+        function deleteParticipant(regNo) {
+            if (confirm("هل أنت متأكد من حذف هذا المتسابق؟")) {
+                participants = participants.filter(item => item.regNo !== regNo);
+                saveData();
+                updateStats();
+                renderAdminTable();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات المسجلين بالكامل؟")) {
+                participants = [];
+                saveData();
+                updateStats();
+                renderAdminTable();
+            }
+        }
+
+        function exportToExcel() {
+            if (participants.length === 0) {
+                alert("لا توجد بيانات لتصديرها!");
+                return;
+            }
+            let csv = "\uFEFFالكود,المرحلة,القرية,اسم المتسابق,الرقم القومي,السن,المستوى,ولي الأمر,الواتساب,الدرجة,التاريخ\n";
+            participants.forEach(p => {
+                csv += `"${p.regNo}","${p.stage}","${p.village}","${p.applicantName}","${p.nationalId}","${p.age}","${p.quranLevel}","${p.parentName}","${p.parentPhone}","${p.score || 0}","${p.date}"\n`;
+            });
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `AlQaswaa_Quran_2026_${new Date().toLocaleDateString()}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
