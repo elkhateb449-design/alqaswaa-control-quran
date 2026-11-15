@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة القرآن الكريم - شركة القصواء للسياحة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0B2545;
+            --navy-light: #133B5C;
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --bg-light: #F4F6F9;
+            --text-dark: #2C3E50;
+            --error: #E74C3C;
+            --success: #27AE60;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--gold);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-top {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: 900;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #FFFFFF;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .star-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 4rem;
+            color: rgba(212, 175, 55, 0.12);
+            pointer-events: none;
+        }
+        .star-right { right: 5%; }
+        .star-left { left: 5%; }
+
+        .container {
+            max-width: 700px;
+            margin: -30px auto 40px auto;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(11, 37, 69, 0.1);
+            width: 92%;
+            position: relative;
+            z-index: 10;
+            border-top: 5px solid var(--gold);
+        }
+
+        .container.admin-mode {
+            max-width: 1200px;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-title h3 {
+            color: var(--navy);
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .form-title p {
+            color: #7F8C8D;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: var(--error);
+            margin-right: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E1E8ED;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #FAFBFC;
+            color: var(--text-dark);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--gold);
+            outline: none;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #B89728 100%);
+            color: var(--navy);
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-navy { background: var(--navy); color: white; }
+        .btn-sm { padding: 8px 14px; font-size: 0.85rem; width: auto; margin: 2px; border-radius: 8px; }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-success { background: var(--success); color: white; }
+
+        .alert {
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: none;
+            text-align: center;
+        }
+
+        .alert-error {
+            background-color: #FDEDEC;
+            color: var(--error);
+            border: 1px solid #F5B7B1;
+        }
+
+        .ticket {
+            display: none;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F9FBFD 100%);
+            border: 3px dashed var(--gold);
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .ticket h2 {
+            color: var(--navy);
+            font-size: 1.7rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 12px;
+            font-weight: 900;
+        }
+
+        .ticket-info {
+            text-align: right;
+            margin: 20px 0;
+            font-size: 1.05rem;
+            line-height: 2;
+            background: #F8F9FA;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border-right: 5px solid var(--navy);
+        }
+
+        .ticket-info span {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .badge-code {
+            display: inline-block;
+            background: var(--navy);
+            color: var(--gold);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            border: 2px solid var(--gold);
+        }
+
+        .stage-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .stage-1 { background: #E8F8F5; color: #117864; }
+        .stage-2 { background: #FEF9E7; color: #9A7D0A; }
+
+        .admin-toggle {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #E1E8ED;
+        }
+
+        .admin-toggle a {
+            color: #7F8C8D;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .admin-toggle a:hover { color: var(--navy); }
+
+        #adminPanel { display: none; }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .stat-card p { font-size: 0.85rem; opacity: 0.9; }
+
+        .controls-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .controls-bar input, .controls-bar select {
+            flex: 1;
+            min-width: 170px;
+        }
+
+        .table-responsive { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #E1E8ED;
+            padding: 10px 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--navy);
+            color: var(--gold-light);
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) { background-color: #F9FBFD; }
+
+        .score-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background-color: var(--navy);
+            color: var(--gold-light);
+            font-size: 0.9rem;
+            margin-top: 50px;
+            border-top: 4px solid var(--gold);
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #ticketView, #ticketView * { visibility: visible; }
+            #ticketView { position: absolute; left: 0; top: 0; width: 100%; border: 2px solid #000; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="star-icon star-right">★</div>
+        <div class="star-icon star-left">★</div>
+        <div class="badge-top">✨ برعاية وتنظيم شركة القصواء للسياحة ✨</div>
+        <h1>مسابقة القرآن الكريم الكبرى</h1>
+        <p>لبراعم والنشء - لعام 2026</p>
+    </header>
+
+    <div class="container" id="mainContainer">
+        <div id="alertBox" class="alert alert-error"></div>
+
+        <!-- استمارة التسجيل -->
+        <div id="registrationForm">
+            <div class="form-title">
+                <h3>استمارة تسجيل متسابق جديد</h3>
+                <p>يرجى اختيار المستوى بدقة وإدخال بيانات شهادة الميلاد</p>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span>اسم المتسابق الرباعي</label>
+                <input type="text" id="applicantName" placeholder="أدخل اسم المتسابق رباعياً باللغة العربية">
+            </div>
+
+            <div class="form-group">
+                <label><span class="required">*</span>الرقم القومي للمتسابق (14 رقماً من شهادة الميلاد)</label>
+                <input type="text" id="nationalId" maxlength="14" placeholder="مثال: 31805121203456">
+            </div>
+
+            <div class="form-group">
+                <label><span class="required">*</span>القرية التابع لها</label>
+                <select id="village">
+                    <option value="">-- اختر القرية --</option>
+                    <option value="سنابي">سنابي</option>
+                    <option value="ميت الشيخ">ميت الشيخ</option>
+                    <option value="علام">علام</option>
+                    <option value="قشطوخ">قشطوخ</option>
+                    <option value="ماهرت">ماهرت</option>
+                    <option value="سليمان">سليمان</option>
+                    <option value="العرب">العرب</option>
+                    <option value="القرنفلى">القرنفلى</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><span class="required">*</span>مستوى الحفظ والمسابقة</label>
+                <select id="quranLevel">
+                    <option value="">-- اختر مستوى الحفظ والفئة العمرية --</option>
+                    <optgroup label="المرحلة الأولى (التسجيل: 20 - 24 ديسمبر)">
+                        <option value="المستوى السابع: ربع القرآن (10 سنوات)" data-stage="المرحلة الأولى" data-maxage="10">المستوى السابع: ربع القرآن (10 سنوات)</option>
+                        <option value="المستوى السادس: ثلث القرآن (11 سنة)" data-stage="المرحلة الأولى" data-maxage="11">المستوى السادس: ثلث القرآن (11 سنة)</option>
+                        <option value="المستوى الخامس: نصف القرآن وثلثه (12 سنة)" data-stage="المرحلة الأولى" data-maxage="12">المستوى الخامس: نصف القرآن وثلثه (12 سنة)</option>
+                        <option value="المستوى الرابع: ثلثي القرآن (13 سنة)" data-stage="المرحلة الأولى" data-maxage="13">المستوى الرابع: ثلثي القرآن (13 سنة)</option>
+                        <option value="المستوى الثالث: ثلاثة أرباع القرآن (14 سنة)" data-stage="المرحلة الأولى" data-maxage="14">المستوى الثالث: ثلاثة أرباع القرآن (14 سنة)</option>
+                        <option value="المستوى الثاني: القرآن كاملاً (15 سنة)" data-stage="المرحلة الأولى" data-maxage="15">المستوى الثاني: القرآن كاملاً (15 سنة)</option>
+                    </optgroup>
+                    <optgroup label="المرحلة الثانية (التسجيل: 27 - 31 ديسمبر)">
+                        <option value="المستوى الأول: براعم غريبة (10 سنوات)" data-stage="المرحلة الثانية" data-maxage="10">المستوى الأول: براعم غريبة (10 سنوات)</option>
+                        <option value="المستوى الثامن: الأجزاء الصغرى (غير محدد)" data-stage="المرحلة الثانية" data-maxage="99">المستوى الثامن: الأجزاء الصغرى (غير محدد)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><span class="required">*</span>اسم ولي الأمر الثلاثي</label>
+                <input type="text" id="parentName" placeholder="أدخل اسم ولي الأمر">
+            </div>
+
+            <div class="form-group">
+                <label><span class="required">*</span>رقم واتساب ولي الأمر</label>
+                <input type="text" id="parentPhone" maxlength="11" placeholder="01012345678">
+            </div>
+
+            <button class="btn" onclick="registerParticipant()">تأكيد التسجيل واستخراج كارت الدخول</button>
+        </div>
+
+        <!-- كارت الدخول -->
+        <div id="ticketView" class="ticket">
+            <h2>🎫 كارت دخول المتسابق</h2>
+            <p style="color: var(--navy); font-weight: 700;">شركة القصواء للسياحة ترحب بكم</p>
+            <div class="ticket-info">
+                <p><strong>المرحلة:</strong> <span id="tStage"></span></p>
+                <p><strong>اسم المتسابق:</strong> <span id="tApplicantName"></span></p>
+                <p><strong>القرية:</strong> <span id="tVillage"></span></p>
+                <p><strong>السن المستوفى:</strong> <span id="tAge"></span> سنوات</p>
+                <p><strong>المستوى:</strong> <span id="tLevel"></span></p>
+                <p><strong>ولي الأمر:</strong> <span id="tParent"></span> (<span id="tPhone"></span>)</p>
+            </div>
+            <div>
+                <p style="font-size: 0.9rem; color: #555; font-weight: bold;">رقم كود الدخول بالمسابقة:</p>
+                <div class="badge-code" id="tRegNo"></div>
+            </div>
+            <p style="font-size: 0.85rem; color: #555; margin-top: 10px;">يرجى الاحتفاظ برقم الكود وإحضار أصل شهادة الميلاد يوم الاختبار (23 يناير).</p>
+            <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn" onclick="window.print()">🖨️ طباعة / حفظ الكارت PDF</button>
+                <button class="btn btn-navy" onclick="resetForm()">تسجيل متسابق آخر</button>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم FULL CONTROL -->
+        <div id="adminPanel">
+            <div class="admin-header">
+                <div>
+                    <h2 style="color: var(--navy);">⚙️ لوحة التحكم الموحدة (FULL CONTROL)</h2>
+                    <p style="color: #666; font-size: 0.9rem;">إدارة المتسابقين، القرى، والمستويات - شركة القصواء للسياحة</p>
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm" onclick="exportToExcel()">📥 تصدير إكسل (Excel)</button>
+                    <button class="btn btn-navy btn-sm" onclick="closeAdmin()">العودة للاستمارة</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="statTotal">0</h3>
+                    <p>إجمالي المسجلين</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="statStage1">0</h3>
+                    <p>المرحلة الأولى</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="statStage2">0</h3>
+                    <p>المرحلة الثانية</p>
+                </div>
+            </div>
+
+            <div class="controls-bar">
+                <input type="text" id="searchInput" onkeyup="renderAdminTable()" placeholder="🔍 ابحث بالاسم، الرقم القومي، أو الكود...">
+                <select id="filterVillage" onchange="renderAdminTable()">
+                    <option value="all">كل القرى</option>
+                    <option value="سنابي">سنابي</option>
+                    <option value="ميت الشيخ">ميت الشيخ</option>
+                    <option value="علام">علام</option>
+                    <option value="قشطوخ">قشطوخ</option>
+                    <option value="ماهرت">ماهرت</option>
+                    <option value="سليمان">سليمان</option>
+                    <option value="العرب">العرب</option>
+                    <option value="القرنفلى">القرنفلى</option>
+                </select>
+                <select id="filterStage" onchange="renderAdminTable()">
+                    <option value="all">كل المراحل</option>
+                    <option value="المرحلة الأولى">المرحلة الأولى</option>
+                    <option value="المرحلة الثانية">المرحلة الثانية</option>
+                </select>
+                <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ مسح الكل</button>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>المرحلة</th>
+                            <th>القرية</th>
+                            <th>اسم المتسابق</th>
+                            <th>الرقم القومي</th>
+                            <th>السن</th>
+                            <th>المستوى</th>
+                            <th>ولي الأمر</th>
+                            <th>الواتساب</th>
+                            <th>الدرجة</th>
+                            <th>تحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="admin-toggle" id="adminToggleBtn">
+            <a href="#" onclick="openAdmin(); return false;">🔒 دخول الكنترول (FULL CONTROL)</a>
+        </div>
+    </div>
+
+    <footer>
+        جميع الحقوق محفوظة © شركة القصواء للسياحة 2026
+    </footer>
+
+    <script>
+        let participants = JSON.parse(localStorage.getItem('qaswaa_participants')) || [];
+
+        function showAlert(msg) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').style.display = 'none';
+        }
+
+        function registerParticipant() {
+            hideAlert();
+            
+            const applicantName = document.getElementById('applicantName').value.trim();
+            const nationalId = document.getElementById('nationalId').value.trim();
+            const village = document.getElementById('village').value;
+            const levelSelect = document.getElementById('quranLevel');
+            const quranLevel = levelSelect.value;
+
+            const parentName = document.getElementById('parentName').value.trim();
+            const parentPhone = document.getElementById('parentPhone').value.trim();
+
+            if (!applicantName || !nationalId || !village || !quranLevel || !parentName || !parentPhone) {
+                showAlert('⚠️ الرجاء إكمال جميع البيانات المطلوبة بدقة.');
+                return;
+            }
+
+            const selectedOption = levelSelect.options[levelSelect.selectedIndex];
+            const stage = selectedOption.getAttribute('data-stage');
+            const maxAge = parseInt(selectedOption.getAttribute('data-maxage'));
+
+            const now = new Date();
+            if (stage === 'المرحلة الثانية') {
+                const start2 = new Date('2026-12-27T00:00:00');
+                const end2 = new Date('2026-12-31T23:59:59');
+                if (now < start2) {
+                    showAlert('⏳ عذراً، باب التسجيل للمرحلة الثانية سيفتح رسمياً يوم 27 ديسمبر 2026.');
+                    return;
+                }
+                if (now > end2) {
+                    showAlert('❌ عذراً، انتهت فترة التسجيل للمرحلة الثانية (انتهت في 31 ديسمبر 2026).');
+                    return;
+                }
+            }
+
+            if (nationalId.length !== 14 || isNaN(nationalId)) {
+                showAlert('⚠️ الرقم القومي غير صحيح (يجب أن يكون 14 رقماً).');
+                return;
+            }
+
+            let century = nationalId[0] == '2' ? 19 : (nationalId[0] == '3' ? 20 : 0);
+            if (century === 0) {
+                showAlert('⚠️ الرقم القومي يجب أن يبدأ بـ 2 أو 3.');
+                return;
+            }
+
+            let year = century * 100 + parseInt(nationalId.substr(1, 2));
+            let month = parseInt(nationalId.substr(3, 2));
+            let day = parseInt(nationalId.substr(5, 2));
+
+            let birthDate = new Date(year, month - 1, day);
+            let targetDate = new Date(2026, 11, 31);
+            
+            let age = targetDate.getFullYear() - birthDate.getFullYear();
+            let m = targetDate.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && targetDate.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            if (isNaN(age) || birthDate > targetDate || month < 1 || month > 12 || day < 1 || day > 31) {
+                showAlert('⚠️ تاريخ الميلاد المستخرج من الرقم القومي غير صحيح.');
+                return;
+            }
+
+            if (age > maxAge) {
+                showAlert(`⚠️ عذراً، السن المستوفى (${age} سنة) يتجاوز الحد الأقصى المسموح به لهذا المستوى (${maxAge} سنوات).`);
+                return;
+            }
+
+            if (participants.some(p => p.nationalId === nationalId)) {
+                showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
+                return;
+            }
+
+            const prefix = stage === 'المرحلة الثانية' ? 'QAS2-' : 'QAS1-';
+            const regNo = prefix + Math.floor(1000 + Math.random() * 9000);
+
+            const newParticipant = {
+                regNo,
+                stage,
+                village,
+                applicantName,
+                nationalId,
+                age,
+                quranLevel,
+                parentName,
+                parentPhone,
+                score: '',
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+            
+            participants.push(newParticipant);
+            saveData();
+
+            document.getElementById('tStage').innerText = stage;
+            document.getElementById('tRegNo').innerText = regNo;
+            document.getElementById('tVillage').innerText = village;
+            document.getElementById('tApplicantName').innerText = applicantName;
+            document.getElementById('tAge').innerText = age;
+            document.getElementById('tLevel').innerText = quranLevel;
+            document.getElementById('tParent').innerText = parentName;
+            document.getElementById('tPhone').innerText = parentPhone;
+
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('ticketView').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('applicantName').value = '';
+            document.getElementById('nationalId').value = '';
+            document.getElementById('village').value = '';
+            document.getElementById('quranLevel').value = '';
+            document.getElementById('parentName').value = '';
+            document.getElementById('parentPhone').value = '';
+            document.getElementById('ticketView').style.display = 'none';
+            document.getElementById('registrationForm').style.display = 'block';
+            hideAlert();
+        }
+
+        function saveData() {
+            localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
+        }
+
+        function openAdmin() {
+            let pass = prompt("أدخل كلمة مرور الكنترول:");
+            if (pass === "qaswaa2026") {
+                hideAlert();
+                document.getElementById('registrationForm').style.display = 'none';
+                document.getElementById('ticketView').style.display = 'none';
+                document.getElementById('adminToggleBtn').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('mainContainer').classList.add('admin-mode');
+                updateStats();
+                renderAdminTable();
+            } else if (pass !== null) {
+                alert("❌ كلمة المرور غير صحيحة!");
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('mainContainer').classList.remove('admin-mode');
+            document.getElementById('registrationForm').style.display = 'block';
+            document.getElementById('adminToggleBtn').style.display = 'block';
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').innerText = participants.length;
+            document.getElementById('statStage1').innerText = participants.filter(p => p.stage === 'المرحلة الأولى').length;
+            document.getElementById('statStage2').innerText = participants.filter(p => p.stage === 'المرحلة الثانية').length;
+        }
+
+        function renderAdminTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const villageFilter = document.getElementById('filterVillage').value;
+            const stageFilter = document.getElementById('filterStage').value;
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = participants.filter(p => {
+                const matchesSearch = p.
