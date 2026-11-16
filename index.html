@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة القرآن الكريم - شركة القصواء للسياحة</title>
+    <title>مسابقة القصواء الكبرى لحفظ وتلاوة القرآن الكريم</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -36,12 +36,27 @@
         header {
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
             color: white;
-            padding: 35px 20px;
+            padding: 30px 20px;
             text-align: center;
             border-bottom: 5px solid var(--gold);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
+        }
+
+        .logo-container {
+            margin-bottom: 15px;
+        }
+
+        .logo-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 2px solid var(--gold);
         }
 
         .badge-top {
@@ -57,7 +72,7 @@
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 1.9rem;
             color: var(--gold);
             margin-bottom: 8px;
             font-weight: 900;
@@ -65,7 +80,7 @@
         }
 
         header p {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #FFFFFF;
             font-weight: 600;
             opacity: 0.95;
@@ -199,6 +214,28 @@
             border-radius: 18px;
             padding: 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            background: url('516966617_765567609134510_2612765282649427684_n.jpg') no-repeat center center;
+            background-size: contain;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ticket * {
+            position: relative;
+            z-index: 1;
         }
 
         .ticket h2 {
@@ -215,7 +252,7 @@
             margin: 20px 0;
             font-size: 1.05rem;
             line-height: 2;
-            background: #F8F9FA;
+            background: rgba(248, 249, 250, 0.9);
             padding: 18px 22px;
             border-radius: 12px;
             border-right: 5px solid var(--navy);
@@ -360,15 +397,17 @@
     <header>
         <div class="star-icon star-right">★</div>
         <div class="star-icon star-left">★</div>
+        <div class="logo-container">
+            <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="شعار شركة القصواء" class="logo-img">
+        </div>
         <div class="badge-top">✨ برعاية وتنظيم شركة القصواء للسياحة ✨</div>
-        <h1>مسابقة القرآن الكريم الكبرى</h1>
+        <h1>مسابقة القصواء الكبرى لحفظ وتلاوة القرآن الكريم</h1>
         <p>لبراعم والنشء - لعام 2026</p>
     </header>
 
     <div class="container" id="mainContainer">
         <div id="alertBox" class="alert alert-error"></div>
 
-        <!-- استمارة التسجيل -->
         <div id="registrationForm">
             <div class="form-title">
                 <h3>استمارة تسجيل متسابق جديد</h3>
@@ -432,7 +471,6 @@
             <button class="btn" onclick="registerParticipant()">تأكيد التسجيل واستخراج كارت الدخول</button>
         </div>
 
-        <!-- كارت الدخول -->
         <div id="ticketView" class="ticket">
             <h2>🎫 كارت دخول المتسابق</h2>
             <p style="color: var(--navy); font-weight: 700;">شركة القصواء للسياحة ترحب بكم</p>
@@ -455,7 +493,6 @@
             </div>
         </div>
 
-        <!-- لوحة التحكم FULL CONTROL -->
         <div id="adminPanel">
             <div class="admin-header">
                 <div>
@@ -719,7 +756,7 @@
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${p.regNo}</strong></td>
-                    <td><span class="stage-pill ${p.stage === 'المرحلة الأولى' ? 'stage-1' : 'stage-2'}">${p.stage}</span></td>
+                    <td>${p.stage}</td>
                     <td>${p.village}</td>
                     <td style="font-weight:700;">${p.applicantName}</td>
                     <td>${p.nationalId}</td>
