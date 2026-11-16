@@ -111,7 +111,7 @@
         }
 
         .container.admin-mode {
-            max-width: 1200px;
+            max-width: 1250px;
         }
 
         .form-title {
@@ -164,6 +164,32 @@
             outline: none;
             background-color: white;
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        /* تنسيق رفع الصورة */
+        .photo-upload-box {
+            border: 2px dashed var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background-color: #FAFBFC;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload-box:hover {
+            background-color: #F3E5AB22;
+        }
+
+        .photo-preview {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--gold);
+            margin: 10px auto 0 auto;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
         .btn {
@@ -247,9 +273,21 @@
             font-weight: 900;
         }
 
+        .ticket-avatar {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--gold);
+            margin: 15px auto 5px auto;
+            box-shadow: 0 5px 15px rgba(11, 37, 69, 0.2);
+            display: block;
+            background: #fff;
+        }
+
         .ticket-info {
             text-align: right;
-            margin: 20px 0;
+            margin: 15px 0 20px 0;
             font-size: 1.05rem;
             line-height: 2;
             background: rgba(248, 249, 250, 0.9);
@@ -284,6 +322,7 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .admin-toggle a {
@@ -358,6 +397,7 @@
             border: 1px solid #E1E8ED;
             padding: 10px 6px;
             text-align: center;
+            vertical-align: middle;
         }
 
         th {
@@ -367,6 +407,14 @@
         }
 
         tr:nth-child(even) { background-color: #F9FBFD; }
+
+        .table-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+        }
 
         .score-input {
             width: 60px;
@@ -411,12 +459,23 @@
     <div class="container" id="mainContainer">
         <div id="alertBox" class="alert alert-error"></div>
 
+        <!-- استمارة التسجيل -->
         <div id="registrationForm">
             <div class="form-title">
                 <h3>استمارة تسجيل متسابق جديد</h3>
-                <p>يرجى اختيار المستوى بدقة وإدخال بيانات شهادة الميلاد</p>
+                <p>يرجى اختيار المستوى بدقة وإدخال بيانات شهادة الميلاد والصورة الشخصية</p>
             </div>
             
+            <div class="form-group">
+                <label><span class="required">*</span>الصورة الشخصية للمتسابق (واضحة وحديثة)</label>
+                <div class="photo-upload-box" onclick="document.getElementById('applicantPhoto').click()">
+                    <p id="uploadText" style="color: var(--navy); font-weight: 700;">📸 اضغط هنا لاختيار أو التقاط الصورة الشخصية</p>
+                    <p style="font-size: 0.8rem; color: #7F8C8D; margin-top: 4px;">ستظهر هذه الصورة على كارت الدخول الرسمي</p>
+                    <img id="photoPreview" class="photo-preview" alt="معاينة الصورة">
+                </div>
+                <input type="file" id="applicantPhoto" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+            </div>
+
             <div class="form-group">
                 <label><span class="required">*</span>اسم المتسابق الرباعي</label>
                 <input type="text" id="applicantName" placeholder="أدخل اسم المتسابق رباعياً باللغة العربية">
@@ -474,9 +533,13 @@
             <button class="btn" onclick="registerParticipant()">تأكيد التسجيل واستخراج كارت الدخول</button>
         </div>
 
+        <!-- كارت الدخول -->
         <div id="ticketView" class="ticket">
             <h2>🎫 كارت دخول المتسابق</h2>
             <p style="color: var(--navy); font-weight: 700;">شركة القصواء للسياحة ترحب بكم</p>
+            
+            <img id="tPhoto" class="ticket-avatar" alt="صورة المتسابق">
+
             <div class="ticket-info">
                 <p><strong>المرحلة:</strong> <span id="tStage"></span></p>
                 <p><strong>اسم المتسابق:</strong> <span id="tApplicantName"></span></p>
@@ -496,6 +559,7 @@
             </div>
         </div>
 
+        <!-- لوحة التحكم -->
         <div id="adminPanel">
             <div class="admin-header">
                 <div>
@@ -548,6 +612,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>الصورة</th>
                             <th>الكود</th>
                             <th>المرحلة</th>
                             <th>القرية</th>
@@ -578,7 +643,52 @@
 
     <script>
         let participants = JSON.parse(localStorage.getItem('qaswaa_participants')) || [];
-        let currentUserRole = ''; // 'admin' أو 'staff'
+        let currentUserRole = '';
+        let currentPhotoBase64 = '';
+
+        // معالجة وضغط الصورة الشخصية تلقائياً للحفاظ على سرعة الموقع
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 250; // تصغير الأبعاد لتكون خفيفة ومناسبة للكارت
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // تحويل الصورة لصيغة مضغوطة
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
+                    
+                    const preview = document.getElementById('photoPreview');
+                    preview.src = currentPhotoBase64;
+                    preview.style.display = 'block';
+                    document.getElementById('uploadText').innerText = '✅ تم اختيار الصورة بنجاح (اضغط للتغيير)';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
 
         function showAlert(msg) {
             const alertBox = document.getElementById('alertBox');
@@ -602,6 +712,11 @@
 
             const parentName = document.getElementById('parentName').value.trim();
             const parentPhone = document.getElementById('parentPhone').value.trim();
+
+            if (!currentPhotoBase64) {
+                showAlert('📸 يرجى رفع الصورة الشخصية للمتسابق أولاً.');
+                return;
+            }
 
             if (!applicantName || !nationalId || !village || !quranLevel || !parentName || !parentPhone) {
                 showAlert('⚠️ الرجاء إكمال جميع البيانات المطلوبة بدقة.');
@@ -678,6 +793,7 @@
                 quranLevel,
                 parentName,
                 parentPhone,
+                photo: currentPhotoBase64,
                 score: '',
                 date: new Date().toLocaleDateString('ar-EG')
             };
@@ -685,6 +801,7 @@
             participants.push(newParticipant);
             saveData();
 
+            document.getElementById('tPhoto').src = currentPhotoBase64;
             document.getElementById('tStage').innerText = stage;
             document.getElementById('tRegNo').innerText = regNo;
             document.getElementById('tVillage').innerText = village;
@@ -705,13 +822,22 @@
             document.getElementById('quranLevel').value = '';
             document.getElementById('parentName').value = '';
             document.getElementById('parentPhone').value = '';
+            document.getElementById('applicantPhoto').value = '';
+            currentPhotoBase64 = '';
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('uploadText').innerText = '📸 اضغط هنا لاختيار أو التقاط الصورة الشخصية';
+            
             document.getElementById('ticketView').style.display = 'none';
             document.getElementById('registrationForm').style.display = 'block';
             hideAlert();
         }
 
         function saveData() {
-            localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
+            try {
+                localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
+            } catch (e) {
+                alert("⚠️ تنبيه: ذاكرة المتصفح ممتلئة بالصور، يرجى تصدير البيانات إكسل وتفريغ السجل القديم.");
+            }
         }
 
         function openAdmin(role) {
@@ -781,22 +907,22 @@
                 return matchesSearch && matchesVillage && matchesStage;
             });
 
-            filtered.forEach((p, index) => {
+            filtered.forEach((p) => {
                 let tr = document.createElement('tr');
                 
                 let scoreCell = '';
                 let controlCell = '';
+                let avatarImg = p.photo ? `<img src="${p.photo}" class="table-avatar" alt="صورة">` : 'بدون';
 
                 if (currentUserRole === 'admin') {
                     scoreCell = `<td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>`;
                     controlCell = `<td><button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button></td>`;
                 } else {
-                    // دور الموظفين: عرض الدرجة فقط بدون إمكانية التعديل، وبدون زر حذف
                     scoreCell = `<td><strong>${p.score || '-'}</strong></td>`;
-                    controlCell = ``;
                 }
 
                 tr.innerHTML = `
+                    <td>${avatarImg}</td>
                     <td><strong>${p.regNo}</strong></td>
                     <td>${p.stage}</td>
                     <td>${p.village}</td>
