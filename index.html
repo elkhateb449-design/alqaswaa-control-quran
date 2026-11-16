@@ -57,6 +57,7 @@
             padding: 5px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             border: 2px solid var(--gold);
+            cursor: pointer;
         }
 
         .badge-top {
@@ -166,7 +167,6 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
         }
 
-        /* تنسيق رفع الصورة */
         .photo-upload-box {
             border: 2px dashed var(--gold);
             border-radius: 12px;
@@ -250,11 +250,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             background: url('516966617_765567609134510_2612765282649427684_n.jpg') no-repeat center center;
             background-size: contain;
-            opacity: 0.06;
+            opacity: 0.08;
             pointer-events: none;
             z-index: 0;
         }
@@ -264,22 +264,41 @@
             z-index: 1;
         }
 
-        .ticket h2 {
-            color: var(--navy);
-            font-size: 1.7rem;
-            margin-bottom: 10px;
+        .ticket-header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
             border-bottom: 2px solid var(--gold);
             padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .ticket-logo-small {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            background: #fff;
+            padding: 3px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .ticket h2 {
+            color: var(--navy);
+            font-size: 1.5rem;
+            margin: 0;
             font-weight: 900;
         }
 
         .ticket-avatar {
-            width: 115px;
-            height: 115px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid var(--gold);
-            margin: 15px auto 5px auto;
+            margin: 10px auto 15px auto;
             box-shadow: 0 5px 15px rgba(11, 37, 69, 0.2);
             display: block;
             background: #fff;
@@ -310,29 +329,9 @@
             font-size: 1.3rem;
             font-weight: 900;
             letter-spacing: 2px;
-            margin: 15px 0;
+            margin: 10px 0;
             border: 2px solid var(--gold);
         }
-
-        .admin-toggle {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #E1E8ED;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .admin-toggle a {
-            color: #7F8C8D;
-            font-size: 0.9rem;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .admin-toggle a:hover { color: var(--navy); }
 
         #adminPanel { display: none; }
 
@@ -449,7 +448,7 @@
         <div class="star-icon star-right">★</div>
         <div class="star-icon star-left">★</div>
         <div class="logo-container">
-            <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="شعار شركة القصواء" class="logo-img">
+            <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="شعار شركة القصواء" class="logo-img" onclick="secretLogoClick()">
         </div>
         <div class="badge-top">✨ برعاية وتنظيم شركة القصواء للسياحة ✨</div>
         <h1>مسابقة القصواء الكبرى لحفظ وتلاوة القرآن الكريم</h1>
@@ -485,507 +484,3 @@
                 <label><span class="required">*</span>الرقم القومي للمتسابق (14 رقماً من شهادة الميلاد)</label>
                 <input type="text" id="nationalId" maxlength="14" placeholder="مثال: 31805121203456">
             </div>
-
-            <div class="form-group">
-                <label><span class="required">*</span>القرية التابع لها</label>
-                <select id="village">
-                    <option value="">-- اختر القرية --</option>
-                    <option value="سنابي">سنابي</option>
-                    <option value="ميت الشيخ">ميت الشيخ</option>
-                    <option value="علام">علام</option>
-                    <option value="قشطوخ">قشطوخ</option>
-                    <option value="ماهرت">ماهرت</option>
-                    <option value="سليمان">سليمان</option>
-                    <option value="العرب">العرب</option>
-                    <option value="القرنفلى">القرنفلى</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label><span class="required">*</span>مستوى الحفظ والمسابقة</label>
-                <select id="quranLevel">
-                    <option value="">-- اختر مستوى الحفظ والفئة العمرية --</option>
-                    <optgroup label="المرحلة الأولى (التسجيل: 20 - 24 ديسمبر)">
-                        <option value="المستوى السابع: ربع القرآن (10 سنوات)" data-stage="المرحلة الأولى" data-maxage="10">المستوى السابع: ربع القرآن (10 سنوات)</option>
-                        <option value="المستوى السادس: ثلث القرآن (11 سنة)" data-stage="المرحلة الأولى" data-maxage="11">المستوى السادس: ثلث القرآن (11 سنة)</option>
-                        <option value="المستوى الخامس: نصف القرآن وثلثه (12 سنة)" data-stage="المرحلة الأولى" data-maxage="12">المستوى الخامس: نصف القرآن وثلثه (12 سنة)</option>
-                        <option value="المستوى الرابع: ثلثي القرآن (13 سنة)" data-stage="المرحلة الأولى" data-maxage="13">المستوى الرابع: ثلثي القرآن (13 سنة)</option>
-                        <option value="المستوى الثالث: ثلاثة أرباع القرآن (14 سنة)" data-stage="المرحلة الأولى" data-maxage="14">المستوى الثالث: ثلاثة أرباع القرآن (14 سنة)</option>
-                        <option value="المستوى الثاني: القرآن كاملاً (15 سنة)" data-stage="المرحلة الأولى" data-maxage="15">المستوى الثاني: القرآن كاملاً (15 سنة)</option>
-                    </optgroup>
-                    <optgroup label="المرحلة الثانية (التسجيل: 27 - 31 ديسمبر)">
-                        <option value="المستوى الأول: براعم غريبة (10 سنوات)" data-stage="المرحلة الثانية" data-maxage="10">المستوى الأول: براعم غريبة (10 سنوات)</option>
-                        <option value="المستوى الثامن: الأجزاء الصغرى (غير محدد)" data-stage="المرحلة الثانية" data-maxage="99">المستوى الثامن: الأجزاء الصغرى (غير محدد)</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label><span class="required">*</span>اسم ولي الأمر الثلاثي</label>
-                <input type="text" id="parentName" placeholder="أدخل اسم ولي الأمر">
-            </div>
-
-            <div class="form-group">
-                <label><span class="required">*</span>رقم واتساب ولي الأمر</label>
-                <input type="text" id="parentPhone" maxlength="11" placeholder="01012345678">
-            </div>
-
-            <button class="btn" onclick="registerParticipant()">تأكيد التسجيل واستخراج كارت الدخول</button>
-        </div>
-
-        <!-- كارت الدخول -->
-        <div id="ticketView" class="ticket">
-            <h2>🎫 كارت دخول المتسابق</h2>
-            <p style="color: var(--navy); font-weight: 700;">شركة القصواء للسياحة ترحب بكم</p>
-            
-            <img id="tPhoto" class="ticket-avatar" alt="صورة المتسابق">
-
-            <div class="ticket-info">
-                <p><strong>المرحلة:</strong> <span id="tStage"></span></p>
-                <p><strong>اسم المتسابق:</strong> <span id="tApplicantName"></span></p>
-                <p><strong>القرية:</strong> <span id="tVillage"></span></p>
-                <p><strong>السن المستوفى:</strong> <span id="tAge"></span> سنوات</p>
-                <p><strong>المستوى:</strong> <span id="tLevel"></span></p>
-                <p><strong>ولي الأمر:</strong> <span id="tParent"></span> (<span id="tPhone"></span>)</p>
-            </div>
-            <div>
-                <p style="font-size: 0.9rem; color: #555; font-weight: bold;">رقم كود الدخول بالمسابقة:</p>
-                <div class="badge-code" id="tRegNo"></div>
-            </div>
-            <p style="font-size: 0.85rem; color: #555; margin-top: 10px;">يرجى الاحتفاظ برقم الكود وإحضار أصل شهادة الميلاد يوم الاختبار.</p>
-            <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
-                <button class="btn" onclick="window.print()">🖨️ طباعة / حفظ الكارت PDF</button>
-                <button class="btn btn-navy" onclick="resetForm()">تسجيل متسابق آخر</button>
-            </div>
-        </div>
-
-        <!-- لوحة التحكم -->
-        <div id="adminPanel">
-            <div class="admin-header">
-                <div>
-                    <h2 id="panelTitle" style="color: var(--navy);">⚙️ لوحة التحكم</h2>
-                    <p style="color: #666; font-size: 0.9rem;">إدارة المتسابقين، القرى، والمستويات - شركة القصواء للسياحة</p>
-                </div>
-                <div>
-                    <button class="btn btn-success btn-sm" onclick="exportToExcel()">📥 تصدير إكسل (Excel)</button>
-                    <button class="btn btn-navy btn-sm" onclick="closeAdmin()">العودة للاستمارة</button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3 id="statTotal">0</h3>
-                    <p>إجمالي المسجلين</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="statStage1">0</h3>
-                    <p>المرحلة الأولى</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="statStage2">0</h3>
-                    <p>المرحلة الثانية</p>
-                </div>
-            </div>
-
-            <div class="controls-bar">
-                <input type="text" id="searchInput" onkeyup="renderAdminTable()" placeholder="🔍 ابحث بالاسم، الرقم القومي، أو الكود...">
-                <select id="filterVillage" onchange="renderAdminTable()">
-                    <option value="all">كل القرى</option>
-                    <option value="سنابي">سنابي</option>
-                    <option value="ميت الشيخ">ميت الشيخ</option>
-                    <option value="علام">علام</option>
-                    <option value="قشطوخ">قشطوخ</option>
-                    <option value="ماهرت">ماهرت</option>
-                    <option value="سليمان">سليمان</option>
-                    <option value="العرب">العرب</option>
-                    <option value="القرنفلى">القرنفلى</option>
-                </select>
-                <select id="filterStage" onchange="renderAdminTable()">
-                    <option value="all">كل المراحل</option>
-                    <option value="المرحلة الأولى">المرحلة الأولى</option>
-                    <option value="المرحلة الثانية">المرحلة الثانية</option>
-                </select>
-                <button id="clearAllBtn" class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ مسح الكل</button>
-            </div>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الصورة</th>
-                            <th>الكود</th>
-                            <th>المرحلة</th>
-                            <th>القرية</th>
-                            <th>اسم المتسابق</th>
-                            <th>الرقم القومي</th>
-                            <th>السن</th>
-                            <th>المستوى</th>
-                            <th>ولي الأمر</th>
-                            <th>الواتساب</th>
-                            <th>الدرجة</th>
-                            <th id="thControl">تحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="admin-toggle" id="adminToggleBtn">
-            <a href="#" onclick="openAdmin('admin'); return false;">🔒 دخول الإدارة (Full Control)</a>
-            <a href="#" onclick="openAdmin('staff'); return false;">👁️ دخول الموظفين (Staff View)</a>
-        </div>
-    </div>
-
-    <footer>
-        جميع الحقوق محفوظة © شركة القصواء للسياحة 2026
-    </footer>
-
-    <script>
-        let participants = JSON.parse(localStorage.getItem('qaswaa_participants')) || [];
-        let currentUserRole = '';
-        let currentPhotoBase64 = '';
-
-        // معالجة وضغط الصورة الشخصية تلقائياً للحفاظ على سرعة الموقع
-        function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxSize = 250; // تصغير الأبعاد لتكون خفيفة ومناسبة للكارت
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height *= maxSize / width;
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width *= maxSize / height;
-                            height = maxSize;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // تحويل الصورة لصيغة مضغوطة
-                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
-                    
-                    const preview = document.getElementById('photoPreview');
-                    preview.src = currentPhotoBase64;
-                    preview.style.display = 'block';
-                    document.getElementById('uploadText').innerText = '✅ تم اختيار الصورة بنجاح (اضغط للتغيير)';
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function showAlert(msg) {
-            const alertBox = document.getElementById('alertBox');
-            alertBox.innerText = msg;
-            alertBox.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function hideAlert() {
-            document.getElementById('alertBox').style.display = 'none';
-        }
-
-        function registerParticipant() {
-            hideAlert();
-            
-            const applicantName = document.getElementById('applicantName').value.trim();
-            const nationalId = document.getElementById('nationalId').value.trim();
-            const village = document.getElementById('village').value;
-            const levelSelect = document.getElementById('quranLevel');
-            const quranLevel = levelSelect.value;
-
-            const parentName = document.getElementById('parentName').value.trim();
-            const parentPhone = document.getElementById('parentPhone').value.trim();
-
-            if (!currentPhotoBase64) {
-                showAlert('📸 يرجى رفع الصورة الشخصية للمتسابق أولاً.');
-                return;
-            }
-
-            if (!applicantName || !nationalId || !village || !quranLevel || !parentName || !parentPhone) {
-                showAlert('⚠️ الرجاء إكمال جميع البيانات المطلوبة بدقة.');
-                return;
-            }
-
-            const selectedOption = levelSelect.options[levelSelect.selectedIndex];
-            const stage = selectedOption.getAttribute('data-stage');
-            const maxAge = parseInt(selectedOption.getAttribute('data-maxage'));
-
-            const now = new Date();
-            if (stage === 'المرحلة الثانية') {
-                const start2 = new Date('2026-12-27T00:00:00');
-                const end2 = new Date('2026-12-31T23:59:59');
-                if (now < start2) {
-                    showAlert('⏳ عذراً، باب التسجيل للمرحلة الثانية سيفتح رسمياً يوم 27 ديسمبر 2026.');
-                    return;
-                }
-                if (now > end2) {
-                    showAlert('❌ عذراً، انتهت فترة التسجيل للمرحلة الثانية (انتهت في 31 ديسمبر 2026).');
-                    return;
-                }
-            }
-
-            if (nationalId.length !== 14 || isNaN(nationalId)) {
-                showAlert('⚠️ الرقم القومي غير صحيح (يجب أن يكون 14 رقماً).');
-                return;
-            }
-
-            let century = nationalId[0] == '2' ? 19 : (nationalId[0] == '3' ? 20 : 0);
-            if (century === 0) {
-                showAlert('⚠️ الرقم القومي يجب أن يبدأ بـ 2 أو 3.');
-                return;
-            }
-
-            let year = century * 100 + parseInt(nationalId.substr(1, 2));
-            let month = parseInt(nationalId.substr(3, 2));
-            let day = parseInt(nationalId.substr(5, 2));
-
-            let birthDate = new Date(year, month - 1, day);
-            let targetDate = new Date(2026, 11, 31);
-            
-            let age = targetDate.getFullYear() - birthDate.getFullYear();
-            let m = targetDate.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && targetDate.getDate() < birthDate.getDate())) {
-                age--;
-            }
-
-            if (isNaN(age) || birthDate > targetDate || month < 1 || month > 12 || day < 1 || day > 31) {
-                showAlert('⚠️ تاريخ الميلاد المستخرج من الرقم القومي غير صحيح.');
-                return;
-            }
-
-            if (age > maxAge) {
-                showAlert(`⚠️ عذراً، السن المستوفى (${age} سنة) يتجاوز الحد الأقصى المسموح به لهذا المستوى (${maxAge} سنوات).`);
-                return;
-            }
-
-            if (participants.some(p => p.nationalId === nationalId)) {
-                showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
-                return;
-            }
-
-            const prefix = stage === 'المرحلة الثانية' ? 'QAS2-' : 'QAS1-';
-            const regNo = prefix + Math.floor(1000 + Math.random() * 9000);
-
-            const newParticipant = {
-                regNo,
-                stage,
-                village,
-                applicantName,
-                nationalId,
-                age,
-                quranLevel,
-                parentName,
-                parentPhone,
-                photo: currentPhotoBase64,
-                score: '',
-                date: new Date().toLocaleDateString('ar-EG')
-            };
-            
-            participants.push(newParticipant);
-            saveData();
-
-            document.getElementById('tPhoto').src = currentPhotoBase64;
-            document.getElementById('tStage').innerText = stage;
-            document.getElementById('tRegNo').innerText = regNo;
-            document.getElementById('tVillage').innerText = village;
-            document.getElementById('tApplicantName').innerText = applicantName;
-            document.getElementById('tAge').innerText = age;
-            document.getElementById('tLevel').innerText = quranLevel;
-            document.getElementById('tParent').innerText = parentName;
-            document.getElementById('tPhone').innerText = parentPhone;
-
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('ticketView').style.display = 'block';
-        }
-
-        function resetForm() {
-            document.getElementById('applicantName').value = '';
-            document.getElementById('nationalId').value = '';
-            document.getElementById('village').value = '';
-            document.getElementById('quranLevel').value = '';
-            document.getElementById('parentName').value = '';
-            document.getElementById('parentPhone').value = '';
-            document.getElementById('applicantPhoto').value = '';
-            currentPhotoBase64 = '';
-            document.getElementById('photoPreview').style.display = 'none';
-            document.getElementById('uploadText').innerText = '📸 اضغط هنا لاختيار أو التقاط الصورة الشخصية';
-            
-            document.getElementById('ticketView').style.display = 'none';
-            document.getElementById('registrationForm').style.display = 'block';
-            hideAlert();
-        }
-
-        function saveData() {
-            try {
-                localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
-            } catch (e) {
-                alert("⚠️ تنبيه: ذاكرة المتصفح ممتلئة بالصور، يرجى تصدير البيانات إكسل وتفريغ السجل القديم.");
-            }
-        }
-
-        function openAdmin(role) {
-            if (role === 'admin') {
-                let pass = prompt("أدخل كلمة مرور الإدارة (Full Control):");
-                if (pass === "qaswaa2026") {
-                    currentUserRole = 'admin';
-                    document.getElementById('panelTitle').innerText = "⚙️ لوحة التحكم الكاملة (Full Control - أحمد جمال)";
-                    document.getElementById('clearAllBtn').style.display = 'inline-block';
-                    document.getElementById('thControl').style.display = 'table-cell';
-                } else if (pass !== null) {
-                    alert("❌ كلمة المرور غير صحيحة!");
-                    return;
-                } else {
-                    return;
-                }
-            } else if (role === 'staff') {
-                let pass = prompt("أدخل كلمة مرور الموظفين (Staff):");
-                if (pass === "staff2026") {
-                    currentUserRole = 'staff';
-                    document.getElementById('panelTitle').innerText = "👁️ لوحة متابعة الموظفين (عرض فقط)";
-                    document.getElementById('clearAllBtn').style.display = 'none';
-                    document.getElementById('thControl').style.display = 'none';
-                } else if (pass !== null) {
-                    alert("❌ كلمة المرور غير صحيحة!");
-                    return;
-                } else {
-                    return;
-                }
-            }
-
-            hideAlert();
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('ticketView').style.display = 'none';
-            document.getElementById('adminToggleBtn').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('mainContainer').classList.add('admin-mode');
-            updateStats();
-            renderAdminTable();
-        }
-
-        function closeAdmin() {
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('mainContainer').classList.remove('admin-mode');
-            document.getElementById('registrationForm').style.display = 'block';
-            document.getElementById('adminToggleBtn').style.display = 'flex';
-            currentUserRole = '';
-        }
-
-        function updateStats() {
-            document.getElementById('statTotal').innerText = participants.length;
-            document.getElementById('statStage1').innerText = participants.filter(p => p.stage === 'المرحلة الأولى').length;
-            document.getElementById('statStage2').innerText = participants.filter(p => p.stage === 'المرحلة الثانية').length;
-        }
-
-        function renderAdminTable() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const villageFilter = document.getElementById('filterVillage').value;
-            const stageFilter = document.getElementById('filterStage').value;
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '';
-
-            const filtered = participants.filter(p => {
-                const matchesSearch = p.applicantName.toLowerCase().includes(search) || p.nationalId.includes(search) || p.regNo.toLowerCase().includes(search);
-                const matchesVillage = villageFilter === 'all' || p.village === villageFilter;
-                const matchesStage = stageFilter === 'all' || p.stage === stageFilter;
-                return matchesSearch && matchesVillage && matchesStage;
-            });
-
-            filtered.forEach((p) => {
-                let tr = document.createElement('tr');
-                
-                let scoreCell = '';
-                let controlCell = '';
-                let avatarImg = p.photo ? `<img src="${p.photo}" class="table-avatar" alt="صورة">` : 'بدون';
-
-                if (currentUserRole === 'admin') {
-                    scoreCell = `<td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>`;
-                    controlCell = `<td><button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button></td>`;
-                } else {
-                    scoreCell = `<td><strong>${p.score || '-'}</strong></td>`;
-                }
-
-                tr.innerHTML = `
-                    <td>${avatarImg}</td>
-                    <td><strong>${p.regNo}</strong></td>
-                    <td>${p.stage}</td>
-                    <td>${p.village}</td>
-                    <td style="font-weight:700;">${p.applicantName}</td>
-                    <td>${p.nationalId}</td>
-                    <td>${p.age}</td>
-                    <td>${p.quranLevel}</td>
-                    <td>${p.parentName}</td>
-                    <td>${p.parentPhone}</td>
-                    ${scoreCell}
-                    ${currentUserRole === 'admin' ? controlCell : ''}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateScore(regNo, score) {
-            if (currentUserRole !== 'admin') return;
-            let p = participants.find(item => item.regNo === regNo);
-            if (p) {
-                p.score = score;
-                saveData();
-            }
-        }
-
-        function deleteParticipant(regNo) {
-            if (currentUserRole !== 'admin') {
-                alert("غير مسموح لك بالحذف!");
-                return;
-            }
-            if (confirm("هل أنت متأكد من حذف هذا المتسابق؟")) {
-                participants = participants.filter(item => item.regNo !== regNo);
-                saveData();
-                updateStats();
-                renderAdminTable();
-            }
-        }
-
-        function clearAllData() {
-            if (currentUserRole !== 'admin') return;
-            if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات المسجلين بالكامل؟")) {
-                participants = [];
-                saveData();
-                updateStats();
-                renderAdminTable();
-            }
-        }
-
-        function exportToExcel() {
-            if (participants.length === 0) {
-                alert("لا توجد بيانات لتصديرها!");
-                return;
-            }
-            let csv = "\uFEFFالكود,المرحلة,القرية,اسم المتسابق,الرقم القومي,السن,المستوى,ولي الأمر,الواتساب,الدرجة,التاريخ\n";
-            participants.forEach(p => {
-                csv += `"${p.regNo}","${p.stage}","${p.village}","${p.applicantName}","${p.nationalId}","${p.age}","${p.quranLevel}","${p.parentName}","${p.parentPhone}","${p.score || 0}","${p.date}"\n`;
-            });
-            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            let link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `AlQaswaa_Quran_2026_${new Date().toLocaleDateString()}.csv`;
-            link.click();
-        }
-    </script>
-</body>
-</html>
