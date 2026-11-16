@@ -281,6 +281,9 @@
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #E1E8ED;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
 
         .admin-toggle a {
@@ -496,7 +499,7 @@
         <div id="adminPanel">
             <div class="admin-header">
                 <div>
-                    <h2 style="color: var(--navy);">⚙️ لوحة التحكم الموحدة (FULL CONTROL)</h2>
+                    <h2 id="panelTitle" style="color: var(--navy);">⚙️ لوحة التحكم</h2>
                     <p style="color: #666; font-size: 0.9rem;">إدارة المتسابقين، القرى، والمستويات - شركة القصواء للسياحة</p>
                 </div>
                 <div>
@@ -538,7 +541,7 @@
                     <option value="المرحلة الأولى">المرحلة الأولى</option>
                     <option value="المرحلة الثانية">المرحلة الثانية</option>
                 </select>
-                <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ مسح الكل</button>
+                <button id="clearAllBtn" class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ مسح الكل</button>
             </div>
 
             <div class="table-responsive">
@@ -555,7 +558,7 @@
                             <th>ولي الأمر</th>
                             <th>الواتساب</th>
                             <th>الدرجة</th>
-                            <th>تحكم</th>
+                            <th id="thControl">تحكم</th>
                         </tr>
                     </thead>
                     <tbody id="adminTableBody"></tbody>
@@ -564,7 +567,8 @@
         </div>
 
         <div class="admin-toggle" id="adminToggleBtn">
-            <a href="#" onclick="openAdmin(); return false;">🔒 دخول الكنترول (FULL CONTROL)</a>
+            <a href="#" onclick="openAdmin('admin'); return false;">🔒 دخول الإدارة (Full Control)</a>
+            <a href="#" onclick="openAdmin('staff'); return false;">👁️ دخول الموظفين (Staff View)</a>
         </div>
     </div>
 
@@ -574,6 +578,7 @@
 
     <script>
         let participants = JSON.parse(localStorage.getItem('qaswaa_participants')) || [];
+        let currentUserRole = ''; // 'admin' أو 'staff'
 
         function showAlert(msg) {
             const alertBox = document.getElementById('alertBox');
@@ -709,27 +714,51 @@
             localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
         }
 
-        function openAdmin() {
-            let pass = prompt("أدخل كلمة مرور الكنترول:");
-            if (pass === "qaswaa2026") {
-                hideAlert();
-                document.getElementById('registrationForm').style.display = 'none';
-                document.getElementById('ticketView').style.display = 'none';
-                document.getElementById('adminToggleBtn').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                document.getElementById('mainContainer').classList.add('admin-mode');
-                updateStats();
-                renderAdminTable();
-            } else if (pass !== null) {
-                alert("❌ كلمة المرور غير صحيحة!");
+        function openAdmin(role) {
+            if (role === 'admin') {
+                let pass = prompt("أدخل كلمة مرور الإدارة (Full Control):");
+                if (pass === "qaswaa2026") {
+                    currentUserRole = 'admin';
+                    document.getElementById('panelTitle').innerText = "⚙️ لوحة التحكم الكاملة (Full Control - أحمد جمال)";
+                    document.getElementById('clearAllBtn').style.display = 'inline-block';
+                    document.getElementById('thControl').style.display = 'table-cell';
+                } else if (pass !== null) {
+                    alert("❌ كلمة المرور غير صحيحة!");
+                    return;
+                } else {
+                    return;
+                }
+            } else if (role === 'staff') {
+                let pass = prompt("أدخل كلمة مرور الموظفين (Staff):");
+                if (pass === "staff2026") {
+                    currentUserRole = 'staff';
+                    document.getElementById('panelTitle').innerText = "👁️ لوحة متابعة الموظفين (عرض فقط)";
+                    document.getElementById('clearAllBtn').style.display = 'none';
+                    document.getElementById('thControl').style.display = 'none';
+                } else if (pass !== null) {
+                    alert("❌ كلمة المرور غير صحيحة!");
+                    return;
+                } else {
+                    return;
+                }
             }
+
+            hideAlert();
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('ticketView').style.display = 'none';
+            document.getElementById('adminToggleBtn').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('mainContainer').classList.add('admin-mode');
+            updateStats();
+            renderAdminTable();
         }
 
         function closeAdmin() {
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('mainContainer').classList.remove('admin-mode');
             document.getElementById('registrationForm').style.display = 'block';
-            document.getElementById('adminToggleBtn').style.display = 'block';
+            document.getElementById('adminToggleBtn').style.display = 'flex';
+            currentUserRole = '';
         }
 
         function updateStats() {
@@ -754,6 +783,19 @@
 
             filtered.forEach((p, index) => {
                 let tr = document.createElement('tr');
+                
+                let scoreCell = '';
+                let controlCell = '';
+
+                if (currentUserRole === 'admin') {
+                    scoreCell = `<td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>`;
+                    controlCell = `<td><button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button></td>`;
+                } else {
+                    // دور الموظفين: عرض الدرجة فقط بدون إمكانية التعديل، وبدون زر حذف
+                    scoreCell = `<td><strong>${p.score || '-'}</strong></td>`;
+                    controlCell = ``;
+                }
+
                 tr.innerHTML = `
                     <td><strong>${p.regNo}</strong></td>
                     <td>${p.stage}</td>
@@ -764,16 +806,15 @@
                     <td>${p.quranLevel}</td>
                     <td>${p.parentName}</td>
                     <td>${p.parentPhone}</td>
-                    <td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button>
-                    </td>
+                    ${scoreCell}
+                    ${currentUserRole === 'admin' ? controlCell : ''}
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function updateScore(regNo, score) {
+            if (currentUserRole !== 'admin') return;
             let p = participants.find(item => item.regNo === regNo);
             if (p) {
                 p.score = score;
@@ -782,6 +823,10 @@
         }
 
         function deleteParticipant(regNo) {
+            if (currentUserRole !== 'admin') {
+                alert("غير مسموح لك بالحذف!");
+                return;
+            }
             if (confirm("هل أنت متأكد من حذف هذا المتسابق؟")) {
                 participants = participants.filter(item => item.regNo !== regNo);
                 saveData();
@@ -791,6 +836,7 @@
         }
 
         function clearAllData() {
+            if (currentUserRole !== 'admin') return;
             if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات المسجلين بالكامل؟")) {
                 participants = [];
                 saveData();
