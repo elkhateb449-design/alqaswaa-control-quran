@@ -36,7 +36,7 @@
         header {
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 35px 20px 45px 20px;
             text-align: center;
             border-bottom: 5px solid var(--gold);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
@@ -49,15 +49,20 @@
         }
 
         .logo-img {
-            width: 90px;
-            height: 90px;
+            width: 135px;
+            height: 135px;
             object-fit: contain;
             border-radius: 50%;
             background: white;
-            padding: 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 2px solid var(--gold);
+            padding: 3px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            border: 3px solid var(--gold);
             cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.04);
         }
 
         .badge-top {
@@ -276,14 +281,14 @@
         .ticket::before {
             content: "";
             position: absolute;
-            top: 50%;
+            top: 52%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 300px;
-            height: 300px;
+            width: 360px;
+            height: 360px;
             background: url('516966617_765567609134510_2612765282649427684_n.jpg') no-repeat center center;
             background-size: contain;
-            opacity: 0.08;
+            opacity: 0.15;
             pointer-events: none;
             z-index: 0;
         }
@@ -299,24 +304,24 @@
             justify-content: center;
             gap: 15px;
             border-bottom: 2px solid var(--gold);
-            padding-bottom: 12px;
+            padding-bottom: 14px;
             margin-bottom: 15px;
         }
 
         .ticket-logo-small {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
             border-radius: 50%;
-            border: 2px solid var(--gold);
+            border: 3px solid var(--gold);
             background: #fff;
-            padding: 3px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            padding: 2px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .ticket h2 {
             color: var(--navy);
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             margin: 0;
             font-weight: 900;
         }
@@ -338,7 +343,7 @@
             margin: 15px 0 20px 0;
             font-size: 1.05rem;
             line-height: 2;
-            background: rgba(248, 249, 250, 0.9);
+            background: rgba(248, 249, 250, 0.85);
             padding: 18px 22px;
             border-radius: 12px;
             border-right: 5px solid var(--navy);
@@ -572,7 +577,7 @@
                 <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="لوجو الشركة" class="ticket-logo-small">
                 <div>
                     <h2>🎫 كارت دخول المتسابق</h2>
-                    <p style="color: var(--navy); font-weight: 700; font-size: 0.85rem;">شركة القصواء للسياحة - قطاع قطور</p>
+                    <p style="color: var(--navy); font-weight: 700; font-size: 0.9rem;">شركة القصواء للسياحة - قطاع قطور</p>
                 </div>
             </div>
 
