@@ -80,13 +80,6 @@
             text-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
 
-        header p {
-            font-size: 1.05rem;
-            color: #FFFFFF;
-            font-weight: 600;
-            opacity: 0.95;
-        }
-
         .star-icon {
             position: absolute;
             top: 50%;
@@ -488,7 +481,6 @@
         </div>
         <div class="badge-top">✨ برعاية وتنظيم شركة القصواء للسياحة ✨</div>
         <h1>مسابقة القصواء الكبرى لحفظ وتلاوة القرآن الكريم</h1>
-        <p>لبراعم والنشء بمركز قطور - لعام 2026</p>
     </header>
 
     <div class="container" id="mainContainer">
@@ -531,11 +523,11 @@
                 <label><span class="required">*</span>القرية التابع لها (مركز قطور)</label>
                 <select id="village">
                     <option value="">-- اختر القرية --</option>
-                    <option value="سنابي">سنابي</option>
+                    <option value="سماتاي">سماتاي</option>
                     <option value="ميت الشيخ">ميت الشيخ</option>
                     <option value="علام">علام</option>
-                    <option value="قشطوخ">قشطوخ</option>
-                    <option value="ماهرت">ماهرت</option>
+                    <option value="فتحي">فتحي</option>
+                    <option value="ماهر">ماهر</option>
                     <option value="سليمان">سليمان</option>
                     <option value="العرب">العرب</option>
                     <option value="القرنفلى">القرنفلى</option>
@@ -637,11 +629,11 @@
                 <input type="text" id="searchInput" onkeyup="renderAdminTable()" placeholder="🔍 ابحث بالاسم، الرقم القومي، أو الكود...">
                 <select id="filterVillage" onchange="renderAdminTable()">
                     <option value="all">كل القرى</option>
-                    <option value="سنابي">سنابي</option>
+                    <option value="سماتاي">سماتاي</option>
                     <option value="ميت الشيخ">ميت الشيخ</option>
                     <option value="علام">علام</option>
-                    <option value="قشطوخ">قشطوخ</option>
-                    <option value="ماهرت">ماهرت</option>
+                    <option value="فتحي">فتحي</option>
+                    <option value="ماهر">ماهر</option>
                     <option value="سليمان">سليمان</option>
                     <option value="العرب">العرب</option>
                     <option value="القرنفلى">القرنفلى</option>
@@ -691,7 +683,7 @@
         // إعدادات النطاق الجغرافي (مركز قطور - الغربية)
         const QUTOUR_LAT = 30.9715;
         const QUTOUR_LNG = 30.9467;
-        const MAX_RADIUS_KM = 15; // نطاق 15 كم يغطي قطور وقراها بالكامل
+        const MAX_RADIUS_KM = 15;
         let isLocationVerified = false;
         let userDistanceKm = null;
 
@@ -707,9 +699,8 @@
             }
         };
 
-        // حساب المسافة بالكيلومتر بين نقطتين (Haversine formula)
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // نصف قطر الأرض بالكيلومتر
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
