@@ -493,7 +493,6 @@
 
         <!-- استمارة التسجيل -->
         <div id="registrationForm">
-            <!-- شريط حالة الموقع الجغرافي -->
             <div id="locationBanner" class="location-banner">
                 <span id="locationStatusText">📍 جاري التحقق من موقعك الجغرافي (نطاق مركز قطور)...</span>
                 <button type="button" class="btn btn-navy btn-sm" onclick="checkUserLocation()">تحديث الموقع</button>
@@ -607,9 +606,10 @@
             <div class="admin-header">
                 <div>
                     <h2 id="panelTitle" style="color: var(--navy);">⚙️ لوحة التحكم</h2>
-                    <p style="color: #666; font-size: 0.9rem;">إدارة المتسابقين، القرى، والمستويات - شركة القصواء للسياحة</p>
+                    <p style="color: #666; font-size: 0.9rem;">مزامنة مباشرة مع قاعدة البيانات السحابية - شركة القصواء للسياحة</p>
                 </div>
                 <div>
+                    <button class="btn btn-navy btn-sm" onclick="fetchParticipantsFromCloud()">🔄 تحديث البيانات</button>
                     <button class="btn btn-success btn-sm" onclick="exportToExcel()">📥 تصدير إكسل (Excel)</button>
                     <button class="btn btn-navy btn-sm" onclick="closeAdmin()">العودة للاستمارة</button>
                 </div>
@@ -680,7 +680,9 @@
     </footer>
 
     <script>
-        let participants = JSON.parse(localStorage.getItem('qaswaa_participants')) || [];
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnd4KSEB1Ot44dZqCbXib7B_-j_Ysy0rHDA73Yo3EN2rIcmDtA39gP620ZmmHkteMt/exec";
+
+        let participants = [];
         let currentUserRole = '';
         let currentPhotoBase64 = '';
         let logoClickCount = 0;
@@ -785,7 +787,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const maxSize = 250;
+                    const maxSize = 180;
                     let width = img.width;
                     let height = img.height;
 
@@ -806,7 +808,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.65);
                     
                     const preview = document.getElementById('photoPreview');
                     preview.src = currentPhotoBase64;
@@ -829,7 +831,7 @@
             document.getElementById('alertBox').style.display = 'none';
         }
 
-        function registerParticipant() {
+        async function registerParticipant() {
             hideAlert();
 
             if (!isLocationVerified) {
@@ -909,44 +911,64 @@
                 return;
             }
 
-            if (participants.some(p => p.nationalId === nationalId)) {
-                showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
-                return;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = '⏳ جاري حفظ البيانات واستخراج الكارت...';
+
+            try {
+                const checkRes = await fetch(GOOGLE_SCRIPT_URL);
+                const cloudData = await checkRes.json();
+                
+                if (cloudData.some(p => String(p.nationalId).replace("'", "") === nationalId)) {
+                    showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'تأكيد التسجيل واستخراج كارت الدخول';
+                    return;
+                }
+
+                const prefix = stage === 'المرحلة الثانية' ? 'QAS2-' : 'QAS1-';
+                const regNo = prefix + Math.floor(1000 + Math.random() * 9000);
+                const regDate = new Date().toLocaleDateString('ar-EG');
+
+                const payload = {
+                    action: "create",
+                    regNo,
+                    stage,
+                    village,
+                    applicantName,
+                    nationalId,
+                    age,
+                    quranLevel,
+                    parentName,
+                    parentPhone,
+                    photo: currentPhotoBase64,
+                    date: regDate
+                };
+
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                document.getElementById('tPhoto').src = currentPhotoBase64;
+                document.getElementById('tStage').innerText = stage;
+                document.getElementById('tRegNo').innerText = regNo;
+                document.getElementById('tVillage').innerText = village;
+                document.getElementById('tApplicantName').innerText = applicantName;
+                document.getElementById('tAge').innerText = age;
+                document.getElementById('tLevel').innerText = quranLevel;
+                document.getElementById('tParent').innerText = parentName;
+                document.getElementById('tPhone').innerText = parentPhone;
+
+                document.getElementById('registrationForm').style.display = 'none';
+                document.getElementById('ticketView').style.display = 'block';
+
+            } catch (err) {
+                showAlert('❌ حدث خطأ في الاتصال بالإنترنت، يرجى المحاولة مرة أخرى.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'تأكيد التسجيل واستخراج كارت الدخول';
             }
-
-            const prefix = stage === 'المرحلة الثانية' ? 'QAS2-' : 'QAS1-';
-            const regNo = prefix + Math.floor(1000 + Math.random() * 9000);
-
-            const newParticipant = {
-                regNo,
-                stage,
-                village,
-                applicantName,
-                nationalId,
-                age,
-                quranLevel,
-                parentName,
-                parentPhone,
-                photo: currentPhotoBase64,
-                score: '',
-                date: new Date().toLocaleDateString('ar-EG')
-            };
-            
-            participants.push(newParticipant);
-            saveData();
-
-            document.getElementById('tPhoto').src = currentPhotoBase64;
-            document.getElementById('tStage').innerText = stage;
-            document.getElementById('tRegNo').innerText = regNo;
-            document.getElementById('tVillage').innerText = village;
-            document.getElementById('tApplicantName').innerText = applicantName;
-            document.getElementById('tAge').innerText = age;
-            document.getElementById('tLevel').innerText = quranLevel;
-            document.getElementById('tParent').innerText = parentName;
-            document.getElementById('tPhone').innerText = parentPhone;
-
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('ticketView').style.display = 'block';
         }
 
         function resetForm() {
@@ -966,11 +988,21 @@
             hideAlert();
         }
 
-        function saveData() {
+        async function fetchParticipantsFromCloud() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '<tr><td colspan="12" style="padding:20px; font-weight:bold;">⏳ جاري تحميل بيانات المتسابقين من السحابة...</td></tr>';
             try {
-                localStorage.setItem('qaswaa_participants', JSON.stringify(participants));
+                const res = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await res.json();
+                participants = data.map(item => ({
+                    ...item,
+                    nationalId: String(item.nationalId || '').replace("'", ""),
+                    parentPhone: String(item.parentPhone || '').replace("'", "")
+                }));
+                updateStats();
+                renderAdminTable();
             } catch (e) {
-                alert("⚠️ تنبيه: ذاكرة المتصفح ممتلئة بالصور، يرجى تصدير البيانات إكسل.");
+                tbody.innerHTML = '<tr><td colspan="12" style="color:red; padding:20px;">❌ تعذر تحميل البيانات، تأكد من رابط Google Script واتصالك بالإنترنت.</td></tr>';
             }
         }
 
@@ -1008,8 +1040,7 @@
             document.getElementById('ticketView').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('mainContainer').classList.add('admin-mode');
-            updateStats();
-            renderAdminTable();
+            fetchParticipantsFromCloud();
         }
 
         function closeAdmin() {
@@ -1035,18 +1066,23 @@
             tbody.innerHTML = '';
 
             const filtered = participants.filter(p => {
-                const matchesSearch = p.applicantName.toLowerCase().includes(search) || p.nationalId.includes(search) || p.regNo.toLowerCase().includes(search);
+                const matchesSearch = String(p.applicantName).toLowerCase().includes(search) || String(p.nationalId).includes(search) || String(p.regNo).toLowerCase().includes(search);
                 const matchesVillage = villageFilter === 'all' || p.village === villageFilter;
                 const matchesStage = stageFilter === 'all' || p.stage === stageFilter;
                 return matchesSearch && matchesVillage && matchesStage;
             });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="padding:15px;">لا توجد بيانات مطابقة حالياً.</td></tr>';
+                return;
+            }
 
             filtered.forEach((p) => {
                 let tr = document.createElement('tr');
                 
                 let scoreCell = '';
                 let controlCell = '';
-                let avatarImg = p.photo ? `<img src="${p.photo}" class="table-avatar" alt="صورة">` : 'بدون';
+                let avatarImg = (p.photo && (String(p.photo).startsWith('data:image') || String(p.photo).startsWith('http'))) ? `<img src="${p.photo}" class="table-avatar" alt="صورة">` : 'بدون';
 
                 if (currentUserRole === 'admin') {
                     scoreCell = `<td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>`;
@@ -1073,35 +1109,33 @@
             });
         }
 
-        function updateScore(regNo, score) {
+        async function updateScore(regNo, score) {
             if (currentUserRole !== 'admin') return;
-            let p = participants.find(item => item.regNo === regNo);
-            if (p) {
-                p.score = score;
-                saveData();
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "updateScore", regNo, score })
+            });
+        }
+
+        async function deleteParticipant(regNo) {
+            if (currentUserRole !== 'admin') return;
+            if (confirm("هل أنت متأكد من حذف هذا المتسابق نهائياً من السحابة؟")) {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "delete", regNo })
+                });
+                fetchParticipantsFromCloud();
             }
         }
 
-        function deleteParticipant(regNo) {
-            if (currentUserRole !== 'admin') {
-                alert("غير مسموح لك بالحذف!");
-                return;
-            }
-            if (confirm("هل أنت متأكد من حذف هذا المتسابق؟")) {
-                participants = participants.filter(item => item.regNo !== regNo);
-                saveData();
-                updateStats();
-                renderAdminTable();
-            }
-        }
-
-        function clearAllData() {
+        async function clearAllData() {
             if (currentUserRole !== 'admin') return;
             if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات المسجلين بالكامل؟")) {
-                participants = [];
-                saveData();
-                updateStats();
-                renderAdminTable();
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "clearAll" })
+                });
+                fetchParticipantsFromCloud();
             }
         }
 
