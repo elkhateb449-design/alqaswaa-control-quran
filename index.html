@@ -482,7 +482,7 @@
         <div class="star-icon star-right">★</div>
         <div class="star-icon star-left">★</div>
         <div class="logo-container">
-            <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="شعار شركة القصواء" class="logo-img" onclick="secretLogoClick()">
+            <img src="516966617_765567609134510_2612765282649427684_n.jpg" alt="شعار شركة القصواء" class="logo-img">
         </div>
         <div class="badge-top">✨ برعاية وتنظيم شركة القصواء للسياحة ✨</div>
         <h1>مسابقة القصواء الكبرى لحفظ وتلاوة القرآن الكريم</h1>
@@ -535,6 +535,7 @@
                     <option value="سليمان">سليمان</option>
                     <option value="العرب">العرب</option>
                     <option value="القرنفلى">القرنفلى</option>
+                    <option value="الشركه">الشركه</option>
                 </select>
             </div>
 
@@ -601,78 +602,6 @@
             </div>
         </div>
 
-        <!-- لوحة التحكم -->
-        <div id="adminPanel">
-            <div class="admin-header">
-                <div>
-                    <h2 id="panelTitle" style="color: var(--navy);">⚙️ لوحة التحكم</h2>
-                    <p style="color: #666; font-size: 0.9rem;">مزامنة مباشرة مع قاعدة البيانات السحابية - شركة القصواء للسياحة</p>
-                </div>
-                <div>
-                    <button class="btn btn-navy btn-sm" onclick="fetchParticipantsFromCloud()">🔄 تحديث البيانات</button>
-                    <button class="btn btn-success btn-sm" onclick="exportToExcel()">📥 تصدير إكسل (Excel)</button>
-                    <button class="btn btn-navy btn-sm" onclick="closeAdmin()">العودة للاستمارة</button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3 id="statTotal">0</h3>
-                    <p>إجمالي المسجلين</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="statStage1">0</h3>
-                    <p>المرحلة الأولى</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="statStage2">0</h3>
-                    <p>المرحلة الثانية</p>
-                </div>
-            </div>
-
-            <div class="controls-bar">
-                <input type="text" id="searchInput" onkeyup="renderAdminTable()" placeholder="🔍 ابحث بالاسم، الرقم القومي، أو الكود...">
-                <select id="filterVillage" onchange="renderAdminTable()">
-                    <option value="all">كل القرى</option>
-                    <option value="سماتاي">سماتاي</option>
-                    <option value="ميت الشيخ">ميت الشيخ</option>
-                    <option value="علام">علام</option>
-                    <option value="فتحي">فتحي</option>
-                    <option value="ماهر">ماهر</option>
-                    <option value="سليمان">سليمان</option>
-                    <option value="العرب">العرب</option>
-                    <option value="القرنفلى">القرنفلى</option>
-                </select>
-                <select id="filterStage" onchange="renderAdminTable()">
-                    <option value="all">كل المراحل</option>
-                    <option value="المرحلة الأولى">المرحلة الأولى</option>
-                    <option value="المرحلة الثانية">المرحلة الثانية</option>
-                </select>
-                <button id="clearAllBtn" class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ مسح الكل</button>
-            </div>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الصورة</th>
-                            <th>الكود</th>
-                            <th>المرحلة</th>
-                            <th>القرية</th>
-                            <th>اسم المتسابق</th>
-                            <th>الرقم القومي</th>
-                            <th>السن</th>
-                            <th>المستوى</th>
-                            <th>ولي الأمر</th>
-                            <th>الواتساب</th>
-                            <th>الدرجة</th>
-                            <th id="thControl">تحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminTableBody"></tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <footer>
@@ -685,7 +614,6 @@
         let participants = [];
         let currentUserRole = '';
         let currentPhotoBase64 = '';
-        let logoClickCount = 0;
 
         // إعدادات النطاق الجغرافي (مركز قطور - الغربية)
         const QUTOUR_LAT = 30.9715;
@@ -695,15 +623,7 @@
         let userDistanceKm = null;
 
         window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
-            if (mode === 'admin') {
-                openAdmin('admin');
-            } else if (mode === 'staff') {
-                openAdmin('staff');
-            } else {
-                checkUserLocation();
-            }
+            checkUserLocation();
         };
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -767,15 +687,6 @@
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
-        }
-
-        function secretLogoClick() {
-            logoClickCount++;
-            if (logoClickCount === 5) {
-                logoClickCount = 0;
-                openAdmin('admin');
-            }
-            setTimeout(() => { logoClickCount = 0; }, 3000);
         }
 
         function handlePhotoUpload(event) {
@@ -916,23 +827,10 @@
             submitBtn.innerText = '⏳ جاري حفظ البيانات واستخراج الكارت...';
 
             try {
-                const checkRes = await fetch(GOOGLE_SCRIPT_URL);
-                const cloudData = await checkRes.json();
-                
-                if (cloudData.some(p => String(p.nationalId).replace("'", "") === nationalId)) {
-                    showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'تأكيد التسجيل واستخراج كارت الدخول';
-                    return;
-                }
-
-                const prefix = stage === 'المرحلة الثانية' ? 'QAS2-' : 'QAS1-';
-                const regNo = prefix + Math.floor(1000 + Math.random() * 9000);
                 const regDate = new Date().toLocaleDateString('ar-EG');
 
                 const payload = {
                     action: "create",
-                    regNo,
                     stage,
                     village,
                     applicantName,
@@ -945,10 +843,28 @@
                     date: regDate
                 };
 
-                await fetch(GOOGLE_SCRIPT_URL, {
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
+                const out = await res.json();
+
+                if (out && out.ok === false && out.error === 'duplicate_national_id') {
+                    showAlert('⚠️ هذا الرقم القومي مسجل مسبقاً في المسابقة ولا يمكن تكراره.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'تأكيد التسجيل واستخراج كارت الدخول';
+                    return;
+                }
+                if (out && out.ok === false && out.error === 'busy') {
+                    showAlert('⏳ السيرفر مشغول حالياً، حاول مرة تانية بعد ثواني.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'تأكيد التسجيل واستخراج كارت الدخول';
+                    return;
+                }
+                if (!out || !out.ok || !out.regNo) {
+                    throw new Error('save failed');
+                }
+                const regNo = out.regNo;
 
                 document.getElementById('tPhoto').src = currentPhotoBase64;
                 document.getElementById('tStage').innerText = stage;
@@ -988,172 +904,6 @@
             hideAlert();
         }
 
-        async function fetchParticipantsFromCloud() {
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '<tr><td colspan="12" style="padding:20px; font-weight:bold;">⏳ جاري تحميل بيانات المتسابقين من السحابة...</td></tr>';
-            try {
-                const res = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await res.json();
-                participants = data.map(item => ({
-                    ...item,
-                    nationalId: String(item.nationalId || '').replace("'", ""),
-                    parentPhone: String(item.parentPhone || '').replace("'", "")
-                }));
-                updateStats();
-                renderAdminTable();
-            } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="12" style="color:red; padding:20px;">❌ تعذر تحميل البيانات، تأكد من رابط Google Script واتصالك بالإنترنت.</td></tr>';
-            }
-        }
-
-        function openAdmin(role) {
-            if (role === 'admin') {
-                let pass = prompt("أدخل كلمة مرور الإدارة (Full Control):");
-                if (pass === "qaswaa2026") {
-                    currentUserRole = 'admin';
-                    document.getElementById('panelTitle').innerText = "⚙️ لوحة التحكم الكاملة (Full Control - أحمد جمال)";
-                    document.getElementById('clearAllBtn').style.display = 'inline-block';
-                    document.getElementById('thControl').style.display = 'table-cell';
-                } else if (pass !== null) {
-                    alert("❌ كلمة المرور غير صحيحة!");
-                    return;
-                } else {
-                    return;
-                }
-            } else if (role === 'staff') {
-                let pass = prompt("أدخل كلمة مرور الموظفين (Staff):");
-                if (pass === "staff2026") {
-                    currentUserRole = 'staff';
-                    document.getElementById('panelTitle').innerText = "👁️ لوحة متابعة الموظفين (عرض فقط)";
-                    document.getElementById('clearAllBtn').style.display = 'none';
-                    document.getElementById('thControl').style.display = 'none';
-                } else if (pass !== null) {
-                    alert("❌ كلمة المرور غير صحيحة!");
-                    return;
-                } else {
-                    return;
-                }
-            }
-
-            hideAlert();
-            document.getElementById('registrationForm').style.display = 'none';
-            document.getElementById('ticketView').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('mainContainer').classList.add('admin-mode');
-            fetchParticipantsFromCloud();
-        }
-
-        function closeAdmin() {
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('mainContainer').classList.remove('admin-mode');
-            document.getElementById('registrationForm').style.display = 'block';
-            currentUserRole = '';
-            window.history.replaceState({}, document.title, window.location.pathname);
-            checkUserLocation();
-        }
-
-        function updateStats() {
-            document.getElementById('statTotal').innerText = participants.length;
-            document.getElementById('statStage1').innerText = participants.filter(p => p.stage === 'المرحلة الأولى').length;
-            document.getElementById('statStage2').innerText = participants.filter(p => p.stage === 'المرحلة الثانية').length;
-        }
-
-        function renderAdminTable() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const villageFilter = document.getElementById('filterVillage').value;
-            const stageFilter = document.getElementById('filterStage').value;
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '';
-
-            const filtered = participants.filter(p => {
-                const matchesSearch = String(p.applicantName).toLowerCase().includes(search) || String(p.nationalId).includes(search) || String(p.regNo).toLowerCase().includes(search);
-                const matchesVillage = villageFilter === 'all' || p.village === villageFilter;
-                const matchesStage = stageFilter === 'all' || p.stage === stageFilter;
-                return matchesSearch && matchesVillage && matchesStage;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="padding:15px;">لا توجد بيانات مطابقة حالياً.</td></tr>';
-                return;
-            }
-
-            filtered.forEach((p) => {
-                let tr = document.createElement('tr');
-                
-                let scoreCell = '';
-                let controlCell = '';
-                let avatarImg = (p.photo && (String(p.photo).startsWith('data:image') || String(p.photo).startsWith('http'))) ? `<img src="${p.photo}" class="table-avatar" alt="صورة">` : 'بدون';
-
-                if (currentUserRole === 'admin') {
-                    scoreCell = `<td><input type="number" class="score-input" value="${p.score || ''}" onchange="updateScore('${p.regNo}', this.value)"></td>`;
-                    controlCell = `<td><button class="btn btn-danger btn-sm" onclick="deleteParticipant('${p.regNo}')">حذف</button></td>`;
-                } else {
-                    scoreCell = `<td><strong>${p.score || '-'}</strong></td>`;
-                }
-
-                tr.innerHTML = `
-                    <td>${avatarImg}</td>
-                    <td><strong>${p.regNo}</strong></td>
-                    <td>${p.stage}</td>
-                    <td>${p.village}</td>
-                    <td style="font-weight:700;">${p.applicantName}</td>
-                    <td>${p.nationalId}</td>
-                    <td>${p.age}</td>
-                    <td>${p.quranLevel}</td>
-                    <td>${p.parentName}</td>
-                    <td>${p.parentPhone}</td>
-                    ${scoreCell}
-                    ${currentUserRole === 'admin' ? controlCell : ''}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        async function updateScore(regNo, score) {
-            if (currentUserRole !== 'admin') return;
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "updateScore", regNo, score })
-            });
-        }
-
-        async function deleteParticipant(regNo) {
-            if (currentUserRole !== 'admin') return;
-            if (confirm("هل أنت متأكد من حذف هذا المتسابق نهائياً من السحابة؟")) {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "delete", regNo })
-                });
-                fetchParticipantsFromCloud();
-            }
-        }
-
-        async function clearAllData() {
-            if (currentUserRole !== 'admin') return;
-            if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات المسجلين بالكامل؟")) {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "clearAll" })
-                });
-                fetchParticipantsFromCloud();
-            }
-        }
-
-        function exportToExcel() {
-            if (participants.length === 0) {
-                alert("لا توجد بيانات لتصديرها!");
-                return;
-            }
-            let csv = "\uFEFFالكود,المرحلة,القرية,اسم المتسابق,الرقم القومي,السن,المستوى,ولي الأمر,الواتساب,الدرجة,التاريخ\n";
-            participants.forEach(p => {
-                csv += `"${p.regNo}","${p.stage}","${p.village}","${p.applicantName}","${p.nationalId}","${p.age}","${p.quranLevel}","${p.parentName}","${p.parentPhone}","${p.score || 0}","${p.date}"\n`;
-            });
-            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            let link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `AlQaswaa_Quran_2026_${new Date().toLocaleDateString()}.csv`;
-            link.click();
-        }
     </script>
 </body>
 </html>
